@@ -533,7 +533,7 @@ src/test/java/...                unit tests (*Tests) and integration tests (*IT)
 - jackdpeterson
 
 ## Students working on this project
-James
-Trevor
-Geovana
-Brett
+- Brett
+- Geovana 
+- James
+- Trevor
