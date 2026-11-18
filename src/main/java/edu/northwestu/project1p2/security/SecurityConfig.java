@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
@@ -53,6 +54,7 @@ public class SecurityConfig {
     public SecurityFilterChain browserSecurityFilterChain(
             final HttpSecurity http,
             final OAuthLoginSuccessHandler oauthSuccessHandler,
+            final ObjectProvider<ClientRegistrationRepository> clientRegistrations,
             final ObjectProvider<RequestMappingHandlerMapping> handlerMapping) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
@@ -68,17 +70,19 @@ public class SecurityConfig {
                         // Return to the originally requested page, or the dashboard.
                         .defaultSuccessUrl(HOME)
                         .failureHandler(loginFailureHandler()))
-                // "Sign in with Google": the provider authenticates, then the success handler
-                // links it to a local user (see OAuthLoginSuccessHandler).
-                .oauth2Login(oauth -> oauth
-                        .loginPage(LOGIN)
-                        .successHandler(oauthSuccessHandler)
-                        .failureUrl(LOGIN + "?oauth"))
                 // With CSRF enabled the logout filter only matches POST /logout, so the
                 // redirect target GET /logout reaches the controller.
                 .logout(logout -> logout
                         .logoutUrl(LOGOUT)
                         .logoutSuccessUrl(LOGOUT));
+        // "Sign in with Google", only when credentials are configured (see GoogleSignInConfig).
+        // The provider authenticates, then the success handler links it to a local user.
+        if (clientRegistrations.getIfAvailable() != null) {
+            http.oauth2Login(oauth -> oauth
+                    .loginPage(LOGIN)
+                    .successHandler(oauthSuccessHandler)
+                    .failureUrl(LOGIN + "?oauth"));
+        }
         return http.build();
     }
 

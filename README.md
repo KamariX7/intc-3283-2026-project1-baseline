@@ -142,7 +142,7 @@ when the app starts:
 Flyway records which migrations have already run (in the
 `flyway_schema_history` table) and only runs new ones.
 
-**To change the schema, add a new file**, such as `V3__add_display_name.sql`.
+**To change the schema, add a new file** with the next unused version, such as `V4__add_display_name.sql`.
 Never edit a migration that has already run: Flyway checks each file's
 checksum and refuses to start if an applied migration has changed.
 
@@ -319,6 +319,21 @@ Errors (exceptions, 404s, security failures) are forwarded to `/error`, which
 Boot's Whitelabel page. With `app.show-stack-traces: true` the page shows the
 exception, message and full stack trace; turn it off in production, since it
 exposes internals.
+
+### Optional: Sign in with Google
+
+Google sign-in is **off by default**; you don't need it to run the app. To turn it
+on, create an OAuth client at <https://console.cloud.google.com/apis/credentials>
+with the redirect URI `http://localhost:8080/login/oauth2/code/google`, then:
+
+```sh
+GOOGLE_CLIENT_ID=... GOOGLE_CLIENT_SECRET=... ./mvnw spring-boot:run
+```
+
+When both are set, `security/GoogleSignInConfig.java` registers Google and the
+sign-in page shows a "Sign in with Google" button. `OAuthLoginSuccessHandler`
+links the Google account to a local user through the `oauth_logins` table.
+Never commit these credentials.
 
 ---
 

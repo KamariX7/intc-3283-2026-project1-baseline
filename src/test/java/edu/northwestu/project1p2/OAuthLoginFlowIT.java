@@ -29,10 +29,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-/** Google sign-in through the real filter chain, success handler, service and Postgres. */
+/**
+ * Google sign-in through the real filter chain, success handler, service and Postgres.
+ * Google sign-in is opt-in, so this context sets placeholder credentials to switch it on.
+ */
 @Tag("integration")
 @Import(TestcontainersConfiguration.class)
-@SpringBootTest
+@SpringBootTest(properties = {"app.google.client-id=test-client-id", "app.google.client-secret=test-secret"})
 @AutoConfigureMockMvc
 class OAuthLoginFlowIT {
 

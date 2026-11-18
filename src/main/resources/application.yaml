@@ -8,21 +8,6 @@ spring:
     # Flyway was added). Baseline it as V1 instead of failing on a non-empty schema.
     # A fresh/empty DB (tests, new volumes) is unaffected and runs V1 normally.
     baseline-on-migrate: true
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            # Create an OAuth client at https://console.cloud.google.com/apis/credentials with
-            # redirect URI {app.base-url}/login/oauth2/code/google, then set these two
-            # environment variables. The placeholder defaults let the app start without them;
-            # Google then rejects the sign-in attempt.
-            client-id: ${GOOGLE_CLIENT_ID:not-configured}
-            client-secret: ${GOOGLE_CLIENT_SECRET:not-configured}
-            scope:
-              - openid
-              - profile
-              - email
   mail:
     # Local smtp-tester from compose.yaml. Override per environment (SPRING_MAIL_HOST, ...).
     host: localhost
@@ -44,3 +29,9 @@ app:
   # Error page shows the exception and full stack trace (AppErrorController).
   # Development aid only: it exposes internals. Set APP_SHOW_STACK_TRACES=false in production.
   show-stack-traces: true
+  # Optional "Sign in with Google". Off unless BOTH are set (see GoogleSignInConfig).
+  # Create an OAuth client at https://console.cloud.google.com/apis/credentials with
+  # redirect URI {app.base-url}/login/oauth2/code/google.
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}
+    client-secret: ${GOOGLE_CLIENT_SECRET:}
